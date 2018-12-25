@@ -1,2 +1,2 @@
-ip=0.0.0.0
-port=1337
+server=0.0.0.0:1337
+login=shared
