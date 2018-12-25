@@ -5,7 +5,7 @@ import (
 	"log"
 )
 
-func WriteMsg(msg ... []byte) bool {
+func WriteMsg(conn net.Conn, msg ... []byte) bool {
     for _, d := range msg {
         if !Write(conn, d) {
             return false
@@ -21,7 +21,7 @@ func Write(conn net.Conn, b []byte) bool {
         log.Printf("Error: Unable to write error msg to %s\n", conn.RemoteAddr().String())
         return false
     } else if n != len(b) {
-        log.Printf("Error: Client %s did not recieve full msg. Recieved %d, Expected %d\n", conn.RemoteAddr().String(), n, len(msg))
+        log.Printf("Error: Client %s did not recieve full msg. Recieved %d, Expected %d\n", conn.RemoteAddr().String(), n, len(b))
         return false
     } else {
         return true
