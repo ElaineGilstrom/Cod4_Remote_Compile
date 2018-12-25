@@ -19,11 +19,11 @@ const (
 
 func NewClientCalls(v string) (val ClientCalls, err error) {
     vals := map[string]ClientCalls {
-        "error":-1,
-        "pong":0,
-        "manifest":1,
-        "fileTransfer":2,
-        "printResult":3}
+        "ClientError":-1,
+        "ClientPong":0,
+        "ClientManifest":1,
+        "ClientFileTransfer":2,
+        "ClientPrintResult":3}
     
     if _, exists := vals[v]; exists {
         return vals[v], nil
@@ -34,14 +34,14 @@ func NewClientCalls(v string) (val ClientCalls, err error) {
 
 func (s ClientCalls) String() string {
     calls := [...]string {
-        "pong",
-        "manifest",
-        "fileTransfer",
-        "printResult"}
+        "ClientPong",
+        "ClientManifest",
+        "ClientFileTransfer",
+        "ClientPrintResult"}
     
-    if s < pong || s > printResult {
+    if s < ClientPong || s > ClientPrintResult {
         if s == -1 {
-            return "error"
+            return "ClientError"
         } else {
             return "Unknown"
         }
