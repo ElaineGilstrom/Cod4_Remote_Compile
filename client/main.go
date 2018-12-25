@@ -24,7 +24,7 @@ func main() {
             return
         }
     } else {
-        for i := 1; i < (len(os.Args) + 1); i += 2 {
+        for i := 1; i < (len(os.Args) - 1); i += 2 {
             if err := initHandler(os.Args[i], os.Args[i + 1], "Command line"); err != 0 {
                 return
             }
