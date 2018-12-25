@@ -40,7 +40,7 @@ func initHandler(arg string, val string, source string) {
 		case "-c", "--config":
 			return handleConfig(val)
 		case "-s", "--server":
-			m, err := regexp.MatchString("[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}:[0-9]{1,5}", val)
+			m, err := regexp.MatchString("^[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}:[0-9]{1,5}$", val)
 			if err != nil {
 				panic(err)
 			} else if !m {
