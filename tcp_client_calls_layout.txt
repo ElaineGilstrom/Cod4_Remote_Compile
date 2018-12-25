@@ -1,0 +1,31 @@
+These are the calls that the server can make to the client
+
+//Headers//
+FF=error
+00=pong
+01=manifest
+02=fileTransfer
+03=printResult
+
+
+//error//
+start [package length] byte 4; Range {00 00 00 00} - {7F FF FF FF}
+for [package length]=[package contense] byte 1
+
+//pong//
+no packet body
+
+//manifest//
+Same package layout as //fileTransfer// But with restricitions on naming convention and file format.
+Servs as list of files in download batch
+
+//fileTransfer//
+start [name len]; byte 1; Range {00} - {FF}
+for [name len]=[name contense] bytes of file name; Returns error if char ![a-zA-Z0-9_.-] OR if not included in manifest.
+after [name contense]=[file len]; byte 4; Range {00 00 00 00} - {7F FF FF FF}
+for [file len]=[file contense]; TODO: Decide if break conn here?
+after [file contense]=[next header]
+
+//printResult//
+start [package length] byte 4; Range {00 00 00 00} - {7F FF FF FF}
+for [package length]=[package contense] byte 1; Returns error if not printable character.
