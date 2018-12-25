@@ -4,5 +4,5 @@ package cod4_remote_compile_shared
 type client_calls int
 
 const (
-	unknown		client_calls = -1//This is temporary for now.
+    unknown     client_calls = -1//This is temporary for now.
 )

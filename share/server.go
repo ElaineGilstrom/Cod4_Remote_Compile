@@ -4,5 +4,5 @@ package cod4_remote_compile_shared
 type server_calls int
 
 const (
-	unknown		server_calls = -1//This is temporary for now.
+    ping            server_calls = 0
 )
