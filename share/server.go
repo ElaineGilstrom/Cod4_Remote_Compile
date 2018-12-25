@@ -1,7 +1,7 @@
-package cod4_remote_compile_shared
+package shared
 
 import (
-    "strings"
+    //"strings"
     "errors"
     "fmt"
 )
@@ -10,26 +10,27 @@ import (
 type ServerCalls int
 
 const (
-    ping            ServerCalls = 0
-    manifest        ServerCalls = 1
-    fileTransfer    ServerCalls = 2
-    returnBackup    ServerCalls = 3
-    ls              ServerCalls = 4
-    compile         ServerCalls = 5
-    login           ServerCalls = 6
+    ServerError           ServerCalls = -1
+    ServerPing            ServerCalls = 0
+    ServerManifest        ServerCalls = 1
+    ServerFileTransfer    ServerCalls = 2
+    ServerReturnBackup    ServerCalls = 3
+    ServerLs              ServerCalls = 4
+    ServerCompile         ServerCalls = 5
+    ServerLogin           ServerCalls = 6
 )
 
 
 func NewServerCalls(v string) (val ServerCalls, err error) {
     vals := map[string]ServerCalls {
-        "ping":0,
-        "manifest":1,
-        "fileTransfer":2,
-        "returnBackup":3,
-        "ls":4,
-        "compile":5,
-        "login":6
-    }
+        "ServerError":-1,
+        "ServerPing":0,
+        "ServerManifest":1,
+        "ServerFileTransfer":2,
+        "ServerReturnBackup":3,
+        "ServerLs":4,
+        "ServerCompile":5,
+        "ServerLogin":6}
     
     if _, exists := vals[v]; exists {
         return vals[v], nil
@@ -40,17 +41,20 @@ func NewServerCalls(v string) (val ServerCalls, err error) {
 
 func (s ServerCalls) String() string {
     calls := [...]string {
-        "ping",
-        "manifest",
-        "fileTransfer",
-        "returnBackup",
-        "ls",
-        "compile",
-        "login"
-    }
+        "ServerPing",
+        "ServerManifest",
+        "ServerFileTransfer",
+        "ServerReturnBackup",
+        "ServerLs",
+        "ServerCompile",
+        "ServerLogin"}
     
-    if s < ping || s > login {
-        return "Unknown"
+    if s < ServerPing || s > ServerLogin {
+        if s == -1 {
+            return "ServerError"
+        } else {
+            return "Unknown"
+        }
     } else {
         return calls[s]
     }
