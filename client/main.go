@@ -1,5 +1,7 @@
 package main
 
+import "Cod4_Remote_Compile/share"
+
 imort (
     "net"
     "fmt"
@@ -8,12 +10,14 @@ imort (
     //"crypto/sha256"
     "strconv"
     "strings"
+    "time"
 )
 
 
 var conn, login string
+var callType share.ServerCalls
 
-func main() {
+func main() int {
     if len(os.Args) <= 1 {
         if err := handleConfig("config"); err != 0 {
             return err
@@ -33,9 +37,39 @@ func main() {
     defer conn.Close()
     
     //TODO: Handle connection
+    switch callType {
+        case share.ServerPing:
+            start := time.Now()
+            n, err := conn.Write([]byte{0})
+            if err != nil {
+                fmt.Println(err)
+                return 2
+            } else if n == 0 {
+                fmt.Errorf("Server read no bytes!\n")
+                return 2
+            }
+            b = [1]byte
+            n,err = conn.Read(b)
+            if err != nil {
+                fmt.Println(err)
+                return 2
+            } else if n == 0 {
+                fmt.Errorf("Server sent no bytes!\n")
+                return 2
+            } else if b[0] != 0 {
+                fmt.Errorf("Server did not pong! (%d != 0)\n", b[0])
+                return 2
+            }
+            fmt.Printf("Pong! %v\n", time.Now().Sub(start))
+            return 1
+        default:
+            fmt.Errorf("%s not implemented!\n", callType.String())
+    }
 }
 
-func initHandler(arg string, val string, source string) {
+func initHandler(arg string, val string, source string) int {
+    arg = strings.ToLower(arg)
+    
     switch arg {
         case "-c", "--config":
             return handleConfig(val)
@@ -53,6 +87,15 @@ func initHandler(arg string, val string, source string) {
         case "-l", "--login":
             login = val
             return 0
+        case "-t", "--type":
+            callType,err = share.NewServerCalls(val)
+            if err != nil {
+                fmt.Errorf("Error from %s: ", source)
+                fmt.Println(err)
+                return 2
+            } else {
+                return 0
+            }
         default:
             fmt.Errorf("Unknown arg %s. (From %s)\n", val, source)
             return 2
@@ -74,10 +117,10 @@ func handleConfig(fileName string) int {
         } else {
             s := strings.Split(l, "=")
             if len(s) != 2 {
-                fmt.Errorf("Config not formatted properly!\nA line must include 1 and only 1 equals sign.!\nGot: %s\n", l)
+                fmt.Errorf("Config %s not formatted properly!\nA line must include 1 and only 1 equals sign.!\nGot: %s\n", fileName, l)
                 return 2
             } else {
-                iErr = initHandler(s[0], s[1], "Config " + fileName)
+                iErr = initHandler("-" + s[0], s[1], "Config " + fileName)
             }
         }
         return iErr
