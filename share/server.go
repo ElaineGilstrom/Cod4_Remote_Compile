@@ -1,7 +1,7 @@
 package share
 
 import (
-    //"strings"
+    "strings"
     "errors"
     "fmt"
 )
@@ -22,15 +22,17 @@ const (
 
 
 func NewServerCalls(v string) (val ServerCalls, err error) {
+    v = strings.ToLower(v)
+    
     vals := map[string]ServerCalls {
-        "ServerError":-1,
-        "ServerPing":0,
-        "ServerManifest":1,
-        "ServerFileTransfer":2,
-        "ServerReturnBackup":3,
-        "ServerLs":4,
-        "ServerCompile":5,
-        "ServerLogin":6}
+        "servererror":-1,
+        "serverping":0,
+        "servermanifest":1,
+        "serverfiletransfer":2,
+        "serverreturnbackup":3,
+        "serverls":4,
+        "servercompile":5,
+        "serverlogin":6}
     
     if _, exists := vals[v]; exists {
         return vals[v], nil

@@ -1,7 +1,7 @@
 package share
 
 import (
-    //"strings"
+    "strings"
     "errors"
     "fmt"
 )
@@ -18,12 +18,14 @@ const (
 )
 
 func NewClientCalls(v string) (val ClientCalls, err error) {
+    v = strings.ToLower(v)
+    
     vals := map[string]ClientCalls {
-        "ClientError":-1,
-        "ClientPong":0,
-        "ClientManifest":1,
-        "ClientFileTransfer":2,
-        "ClientPrintResult":3}
+        "clienterror":-1,
+        "clientpong":0,
+        "clientmanifest":1,
+        "clientfiletransfer":2,
+        "clientprintresult":3}
     
     if _, exists := vals[v]; exists {
         return vals[v], nil
