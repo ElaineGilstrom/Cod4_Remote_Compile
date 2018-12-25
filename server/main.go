@@ -1,8 +1,11 @@
 package main
 
+import "Cod4_Remote_Compile/share"
+
 imort (
     "net"
     "fmt"
+    "log"
     "os"
     //"crypto/sha256"
     "strconv"
@@ -52,4 +55,37 @@ func main() {
 
 func connHandler(conn *net.Conn) {
     defer conn.Close()
+    
+    
+    b := [1]byte
+    n, err := conn.Read(b)
+    if err != nil {
+        fmt.Println(err)
+        return
+    } else if n == 0 {
+        log.Printf("ERROR: Client sent no bytes!\n")
+        return
+    }
+    
+    switch b[0] {
+        case 0:
+            n, err = conn.Write(b)
+            if err != nil {
+                fmt.Println(err)
+                return
+            } else if n == 0 {
+                fmt.Errorf("Client sent no bytes!\n")
+                return
+            }
+        default:
+            msg := append([]byte[-1], []byte(fmt.Sprintf("Unknown call %d", b[0])))
+            log.Printf("Recieved unknow response (%d) from client %s.\n", conn.RemoteAddr().String(), b[0])
+            n, err = conn.Write(msg)
+            if err != nil {
+                log.Printf("Error: Unable to write error msg to client %s\n", conn.RemoteAddr().String())
+            } else {
+                log.Printf("Error: Client %s did not recieve full msg. Recieved %d, Expected %d\n", conn.RemoteAddr().String(), n, len(msg))
+            }
+            return
+    }
 }
