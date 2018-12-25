@@ -1,4 +1,7 @@
+These are the calls that the client can make to the server
+
 //Headers//
+FF=error
 00=ping
 01=Manifest
 02=File Transfer
@@ -8,8 +11,16 @@
 06=Login
 
 
+//error//
+start [package length] byte 4; Range {00 00 00 00} - {7F FF FF FF}
+for [package length]=[package contense] byte 1
+
+//ping//
+no packet body
+
 //Manifest//
 Same package layout as //File Transfer// But with restricitions on naming convention and file format.
+Servs as list of files in upload batch
 
 //File Transfer//
 start [name len]; byte 1; Range {00} - {FF}
