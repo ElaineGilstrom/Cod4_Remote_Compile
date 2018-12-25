@@ -37,7 +37,12 @@ func NewServerCalls(v string) (val ServerCalls, err error) {
     if _, exists := vals[v]; exists {
         return vals[v], nil
     } else {
-        return -1, fmt.Errorf("Unknown Server Call %s", v)
+        v2 := "server" + v
+        if _, exists := vals[v2]; exists {
+            return vals[v2], nil
+        } else {
+            return -1, fmt.Errorf("Unknown Server Call %s", v)
+        }
     }
 }
 

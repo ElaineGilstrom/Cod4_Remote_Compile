@@ -30,7 +30,12 @@ func NewClientCalls(v string) (val ClientCalls, err error) {
     if _, exists := vals[v]; exists {
         return vals[v], nil
     } else {
-        return -1, fmt.Errorf("Unknown Client Call %s", v)
+        v2 := "client" + v
+        if _, exists := vals[v2]; exists {
+            return vals[v2], nil
+        } else {
+            return -1, fmt.Errorf("Unknown Client Call %s", v)
+        }
     }
 }
 
