@@ -2,7 +2,7 @@ package share
 
 import (
     "strings"
-    "errors"
+    //"errors"
     "fmt"
 )
 
@@ -37,7 +37,7 @@ func NewServerCalls(v string) (val ServerCalls, err error) {
     if _, exists := vals[v]; exists {
         return vals[v], nil
     } else {
-        return -1, errors.New(fmt.Sprintf("Unknown Server Call %s", v))
+        return -1, fmt.Errorf("Unknown Server Call %s", v)
     }
 }
 
@@ -59,5 +59,14 @@ func (s ServerCalls) String() string {
         }
     } else {
         return calls[s]
+    }
+}
+
+func ByteToServerCalls(b byte) ServerCalls {
+    val := (ServerCalls)(b)
+    if (val <= ServerLogin && val >= ServerError) {
+        return val
+    } else {
+        return -2
     }
 }
