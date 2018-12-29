@@ -6,7 +6,7 @@ import (
     "fmt"
 )
 
-func ConvIntToByteArr(n int, numBytes int) (b []byte, err error) {
+func ConvIntToBytes(n int, numBytes int) (b []byte, err error) {
     var buf bytes.Buffer
     err = binary.Write(&buf, binary.LittleEndian, n)
     if err != nil {
@@ -21,5 +21,33 @@ func ConvIntToByteArr(n int, numBytes int) (b []byte, err error) {
             }
         }
         return b, nil
+    }
+}
+
+func DecodeIntFromBytes(byteArr []byte) (n int) {
+    n64, r := binary.Varint(byteArr)
+    switch len(byteArr) {
+    case 1:
+        n |= byteArr[0]
+        return n
+    case > 4:
+        //TODO: Handle too big int
+        panic(fmt.Sprintf("%#v is too big!", byteArr))
+    default:
+        var m int
+        if byteArr[len(byteArr) - 1] & 0x80 != 0 {
+            m = -1
+            byteArr[len(byteArr) - 1] = byteArr[len(byteArr) - 1] & 0x7F
+        } else {
+            m = 1
+        }
+        
+        for _, i := range byteArr {
+            n <<= 8
+            n |= i
+        }
+        
+        n *= m
+        return n
     }
 }
