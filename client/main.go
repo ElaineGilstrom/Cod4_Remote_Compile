@@ -54,33 +54,47 @@ func main() {
     
     //TODO: Handle connection
     switch callType {
-        case share.ServerPing://TODO: Add timeout
-            start := time.Now()
-            n, err := conn.Write([]byte{0})
+        case share.ServerPing:
+            ping(conn)
+            return
+        case share.ServerManifest:
+            nf, err := share.NewNetFile(manifest)
             if err != nil {
                 fmt.Println(err)
                 return
-            } else if n == 0 {
-                fmt.Println("ERROR: Server read no bytes!\n")
-                return
             }
-            b := make([]byte, 1)
-            n,err = conn.Read(b)
-            if err != nil {
-                fmt.Println(err)
-                return
-            } else if n == 0 {
-                fmt.Println("ERROR: Server sent no bytes!\n")
-                return
-            } else if b[0] != 0 {
-                fmt.Println("ERROR: Server did not pong! (%d != 0)\n", b[0])
-                return
-            }
-            fmt.Printf("Pong! %v\n", time.Now().Sub(start))
+            
+            nf.Send(conn, share.ServerManifest)
             return
         default:
             fmt.Println("ERROR: %s not implemented!\n", callType.String())
     }
+}
+
+func ping(conn net.Conn) {
+    conn.SetDeadline(time.Now().Add(time.Minute * 2))
+    start := time.Now()
+    n, err := conn.Write([]byte{0})
+    if err != nil {
+        fmt.Println(err)
+        return
+    } else if n == 0 {
+        fmt.Println("ERROR: Server read no bytes!\n")
+        return
+    }
+    b := make([]byte, 1)
+    n,err = conn.Read(b)
+    if err != nil {
+        fmt.Println(err)
+        return
+    } else if n == 0 {
+        fmt.Println("ERROR: Server sent no bytes!\n")
+        return
+    } else if b[0] != 0 {
+        fmt.Println("ERROR: Server did not pong! (%d != 0)\n", b[0])
+        return
+    }
+    fmt.Printf("Pong! %v\n", time.Now().Sub(start))
 }
 
 func initHandler(arg string, val string, source string) int {
@@ -145,16 +159,16 @@ func printHelpPage(page string) {
     case "manifest":
         fmt.Println("This file will include a list of files with their paths relative to the cod4 root direcory. Symlinks not supported!")
         fmt.Println("The manifest's name must follow the syntax: <map name>.manifest. Example: mp_wave.manifest.")
-        fmt.Println("The manifest is formatted as a csv. The first column is how this file should be updated. Can be add, update or remove. The second column is the path relative to the cod4 root folder, then third is the file name.")
-        fmt.Println("Example line: update,raw/maps/mp/gametypes/,mp_wave.gsc")
+        fmt.Println("The manifest is formatted as a csv. The first column is how this file should be updated. Can be add or remove. The second column is the path relative to the cod4 root folder, then third is the file name.")
+        fmt.Println("Example line: add,raw/maps/mp/gametypes/,mp_wave.gsc")
     case "backup":
-        fmt.Println("When ReturnBackup is run, if a manifest is specified, then all files tagged with add or update will be returned, else, all files for that map will be returned.")
+        fmt.Println("When ReturnBackup is run, if a manifest is specified, then all files tagged with add will be returned, else, all files for that map will be returned.")
         fmt.Println("The arg should be formatted as <map name>[:date]")
         fmt.Println("Example: mp_wave")
         fmt.Println("Given no manifest was specified, this will return all of the files for the map mp_wave that were in use during the most recent upload.")
         fmt.Println("Example2: mp_wave:20181229_0039")
         fmt.Println("Given no manifest was specified, this will return all files used by the version made on December 29, 2018 at 12:39 AM.")
-        fmt.Println("For both these examples, if a manifest was specified, it will return all the files in use and in the manifest tagged with add or update at the time of the specified map version.")
+        fmt.Println("For both these examples, if a manifest was specified, it will return all the files in use and in the manifest tagged with add at the time of the specified map version.")
     case "compile":
         fmt.Println("This is still far from being implemented, come back later when I know what this is going to look like.")
     default:
