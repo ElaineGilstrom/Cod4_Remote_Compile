@@ -2,9 +2,10 @@ package share
 
 import (
 	"os"
-	"io/util"
+	"io/ioutil"
 	"net"
-    "bytes"
+    "fmt"
+    //"bytes"
 )
 
 type NetFile struct {
@@ -30,7 +31,7 @@ func NewNetFile(fileName string) (nf *NetFile, err error) {
     }
     
     l, err := ConvIntToBytes(len(fileName), 1)
-    if err {
+    if err != nil {
         return nil, err
     }
     nf.nblen = l
@@ -42,7 +43,7 @@ func NewNetFile(fileName string) (nf *NetFile, err error) {
     nf.contense = contense
     
     l, err = ConvIntToBytes(len(contense), 4)
-    if err {
+    if err != nil {
         return nil, err
     }
     nf.fblen = l
@@ -90,7 +91,7 @@ func NewNetFileFromConn(conn net.Conn) (nf *NetFile, err error) {
         return nil, fmt.Errorf("Recieved wrong number of bytes! Got: %d, Expected: %d.", n, fl)
     }
     
-    return nf
+    return nf, nil
 }
 
 func (nf *NetFile) Send(conn net.Conn, header byte) {
@@ -99,7 +100,11 @@ func (nf *NetFile) Send(conn net.Conn, header byte) {
     msg = append(msg, []byte(nf.name))
     msg = append(msg, nf.fblen)
     msg = append(msg, nf.contense)
-    if !WriteMsg(conn, msg) {
+    if !WriteMsg(conn, msg ...) {
         panic("Write Failed!")
     }
+}
+
+func (nf *NetFile) WriteToDir(dir string) (err error) {
+    return ioutil.WriteFile(dir + nf.name, nf.contense, 0644)
 }
