@@ -77,10 +77,16 @@ func connHandler(conn net.Conn) {
                 log.Println("ERROR: Client sent no bytes!\n")
                 return
             }
+        case share.ServerManifest:
+            nf, err := share.NewNetFileFromConn(conn)
+            if err != nil {
+                panic(err)
+            }
+            nf.WriteToDir("")
         default:
             log.Printf("Recieved unknow response (%d) from client %s.\n", conn.RemoteAddr().String(), b[0])
             errStr := []byte(fmt.Sprintf("Unknown call %d", b[0]))
-            errLen, err := share.ConvIntToByteArr(len(errStr), 4)
+            errLen, err := share.ConvIntToBytes(len(errStr), 4)
             if err != nil {
                 fmt.Printf("Error: Unable to format int %d.\n", len(errStr))
                 fmt.Println(err)
