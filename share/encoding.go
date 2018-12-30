@@ -25,12 +25,12 @@ func ConvIntToBytes(n int, numBytes int) (b []byte, err error) {
 }
 
 func DecodeIntFromBytes(byteArr []byte) (n int) {
-    n64, r := binary.Varint(byteArr)
-    switch len(byteArr) {
-    case 1:
-        n |= byteArr[0]
+    //n64, r := binary.Varint(byteArr)
+    switch {
+    case len(byteArr) == 1:
+        n |= (int)(byteArr[0])
         return n
-    case > 4:
+    case len(byteArr) > 4:
         //TODO: Handle too big int
         panic(fmt.Sprintf("%#v is too big!", byteArr))
     default:
@@ -44,7 +44,7 @@ func DecodeIntFromBytes(byteArr []byte) (n int) {
         
         for _, i := range byteArr {
             n <<= 8
-            n |= i
+            n |= (int)(i)
         }
         
         n *= m
